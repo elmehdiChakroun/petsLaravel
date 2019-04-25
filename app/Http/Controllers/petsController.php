@@ -45,6 +45,12 @@ class petsController extends Controller
         $filename = $file->getClientOriginalName();
         $file->storeAs('public/uploadedImages', $filename);
         $pet->image = $filename;
+
+        if ( $tp = $request->input('typePet') ) {
+            if( $tp == 'birds' || $tp == 'fishs' || $tp == 'reptiles' || $tp == 'mammals' ){
+                $pet->type = $tp;
+            }
+        }
         $pet->save();
         return redirect()->route('pages.index')->with('success', 'Pet has been added successfully');
     }
@@ -66,13 +72,14 @@ class petsController extends Controller
      * @param  \App\Pet  $pet
      * @return \Illuminate\Http\Response
      */
-    public function edit(Pet $pet)
+    public function edit($pet)
     {
-        //
+        $pt = Pet::find($pet);
+        return view('pages.edit', ['pets' => $pt]);
     }
 
     /**
-     * Update the specified resource in storage.
+    * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \App\Pet  $pet
@@ -80,7 +87,8 @@ class petsController extends Controller
      */
     public function update(Request $request, Pet $pet)
     {
-        //
+        $pet->update( $request->all() );
+        return redirect()->route('pages.index')->with('success', 'Pet has been updated successfully ☻');
     }
 
     /**
@@ -89,8 +97,9 @@ class petsController extends Controller
      * @param  \App\Pet  $pet
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Pet $pet)
+    public function destroy($id)
     {
-        //
+        Pet::find($id)->delete();
+        return redirect()->route('pages.index')->with('success', 'Pet has been deleted successfully ☻');
     }
 }
