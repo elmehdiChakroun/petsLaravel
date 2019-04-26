@@ -4,7 +4,7 @@
         <div class="row">
             <div class="col-md-4 offset-md-4">
             <h3><strong>Update The Pet</strong></h3>
-                <form action="{{ route('pages.update', $pets->id) }}" method="post">
+                <form action="{{ route('pages.update', $pets->id) }}" method="post" enctype="multipart/form-data">
                     @csrf
                     {{ method_field('PUT') }}
                     <div class="form-group">

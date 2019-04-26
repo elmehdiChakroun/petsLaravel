@@ -75,6 +75,7 @@ class petsController extends Controller
     public function edit($pet)
     {
         $pt = Pet::find($pet);
+        return $this->authorize('update', $pet);
         return view('pages.edit', ['pets' => $pt]);
     }
 
@@ -85,9 +86,23 @@ class petsController extends Controller
      * @param  \App\Pet  $pet
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Pet $pet)
+    public function update(Request $request, $pet)
     {
-        $pet->update( $request->all() );
+        $pt = Pet::find($pet);
+        $pt->name = $request->input('name');
+        $pt->description = $request->input('description');
+        $file = $request->file('image');
+        $filename = $file->getClientOriginalName();
+
+        $file->storeAs('public/uploadedImages', $filename);
+        $pt->image = $filename;
+
+        if ( $tp = $request->input('typePet') ) {
+            if( $tp == 'birds' || $tp == 'fishs' || $tp == 'reptiles' || $tp == 'mammals' ){
+                $pt->type = $tp;
+            }
+        }
+        $pt->save();
         return redirect()->route('pages.index')->with('success', 'Pet has been updated successfully ☻');
     }
 
@@ -100,6 +115,7 @@ class petsController extends Controller
     public function destroy($id)
     {
         Pet::find($id)->delete();
+        return $this->authorize('delete', $pet);
         return redirect()->route('pages.index')->with('success', 'Pet has been deleted successfully ☻');
     }
 }
